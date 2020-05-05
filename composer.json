@@ -1,0 +1,19 @@
+{
+    "name": "EdenilsonAndrade/ecommerce",
+    "authors": [
+        {
+            "name": "Edenilson de Andrade",
+            "email": "edenilsonbass@hotmail.com"
+        }
+    ],
+    "require": {
+    	"phpmailer/phpmailer":"5.2.22",  //para e-mail
+    	"slim/slim":"2.0", //para rotas
+    	"rain/raintpl":"3.0.0" //para template
+    },
+    "autoload": {
+        "psr-4": {
+            "": "vendor\\hcodebr\\php-classes\\src"
+        }
+    }
+}
