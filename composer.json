@@ -7,9 +7,9 @@
         }
     ],
     "require": {
-    	"phpmailer/phpmailer":"5.2.22",  //para e-mail
-    	"slim/slim":"2.0", //para rotas
-    	"rain/raintpl":"3.0.0" //para template
+    	"phpmailer/phpmailer":"5.2.22",  
+    	"slim/slim":"2.0", 
+    	"rain/raintpl":"3.0.0"   
     },
     "autoload": {
         "psr-4": {
