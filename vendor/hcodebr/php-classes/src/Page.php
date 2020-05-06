@@ -14,14 +14,14 @@ class Page {
 		"data"=>[]
 	];
 
-	public function __construct($opts = array())
+	public function __construct($opts = array(), $tpl_dir = "/views/")
 	{
 		// a função array_merge mescla as informações, se der conflito com o primeiro parametro defaults, vai valer o segundo parametro $opts
 		$this->options = array_merge($this->defaults, $opts);
 
 		$config = array(
 		    "base_url"      => null,
-		    "tpl_dir"       => $_SERVER['DOCUMENT_ROOT']."/views/", //caminho das paginas
+		    "tpl_dir"       => $_SERVER['DOCUMENT_ROOT'].$tpl_dir, //caminho das paginas
 		    "cache_dir"     => $_SERVER['DOCUMENT_ROOT']."/views-cache/", //caminho para o cache
 		    "debug"         => false
 		);
