@@ -5,6 +5,7 @@ require_once("vendor/autoload.php");
 use \Slim\Slim;
 use \Hcode\Page;
 use \Hcode\PageAdmin;
+use \Hcode\Model\User;
 
 $app = new Slim();
 
@@ -26,6 +27,28 @@ $app->get('/admin', function() {
 	$page->setTpl("index");
 
 });
+
+// chama a tela de login 
+$app->get('/admin/login', function() {
+	// como o login.html já contém o footer e o header temos que desabilitar o mesmo da classe Page, que é a classe pai da PageAdmin
+	$page = new PageAdmin([
+		"header"=>false,
+		"footer"=>false
+	]);
+
+	$page->setTpl("login");
+
+});
+// recebe as informações da tela de login
+$app->post('/admin/login', function() {
+
+	User::login($POST["login"], $_POST["password"]);
+	// se for informada o usuário e senha corretos irá passar para o index do admin
+	header("Location: /admin");
+	exit;
+
+});
+
 // faz rodar os comandos acima
 $app->run();
 
