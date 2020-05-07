@@ -69,6 +69,49 @@ class User extends Model {
 		$_SESSION[User::SESSION] = NULL;
 
 	}
+	// metodo para listar todos os usuários
+	public static function listAll()
+	{
+
+		$sql = new Sql();
+
+		return $sql->select("SELECT * FROM tb_users user 
+					INNER JOIN tb_persons per USING(idperson)
+					ORDER BY per.desperson");
+	}
+	// metodo para pegar as informações do usuário com o id que está sendo filtrado
+	public function get($iduser)
+	{
+
+		$sql = new Sql();
+
+		$results = $sql->select("SELECT * FROM tb_users user 
+					INNER JOIN tb_persons per USING(idperson)
+					WHERE user.iduser = :IDUSER", array(
+						":IDUSER"=>$iduser
+					));
+
+		$data = $results[0];
+
+		$this->setData($data);
+	}
+	// metodo para inserir usuário
+	public function save()
+	{
+
+		$sql = new Sql();
+
+		$results = $sql->select("CALL sp_users_save(:desperson, :deslogin :despassword, :desemail, :nrphone, :inadmin)", array(
+			":desperson"=>$this->getdesperson(),
+			":deslogin"=>$this->getdeslogin(),
+			":despassword"=>$this->getdespassword(),
+			":desemail"=>$this->getdesemail(),
+			":nrphone"=>$this->getnrphone(),
+			":inadmin"=>$this->getinadmin()
+		));
+
+		
+	}
 
 }
 

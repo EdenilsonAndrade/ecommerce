@@ -62,6 +62,81 @@ $app->get('/admin/logout', function() {
 
 });
 
+// tela para listar todos os usuários
+$app->get("/admin/users", function() {
+
+	User::verifyLogin();
+
+	$users = User::listAll(); //metodo para listar todos os usuários
+
+	$page = new PageAdmin();
+
+	$page->setTpl("users", array(
+		"users"=>$users
+	));
+
+});
+// acessa a tela para criar usuário
+$app->get("/admin/users/create", function() {
+
+	User::verifyLogin();
+
+	$page = new PageAdmin();
+
+	$page->setTpl("users-create");
+
+});
+
+// para deletar um usuário no banco de dados
+$app->get("/admin/users/:iduser/delete", function($iduser) {
+
+	User::verifyLogin();	
+
+});
+
+// acessa a tela para alterar usuário
+$app->get("/admin/users/:iduser", function($iduser) {
+
+	User::verifyLogin();
+
+	$user = new User();
+
+	$user->get((int)$iduser);
+
+	$page = new PageAdmin();
+
+	$page->setTpl("users-update", array(
+		"user"=>$user->getValues()
+	));
+
+});
+
+// salva o usuário que foi criado
+$app->post("/admin/users/create", function() {
+
+	User::verifyLogin();	
+
+	$user = new User();
+
+	$_POST["inadmin"] = (isset($_POST["inadmin"]))?1:0;
+
+	$user->setData($_POST);
+
+	var_dump($user);
+
+	// $user->save();
+
+	// header("Location: /admin/users");
+	// exit;
+
+});
+// salva as alterações que foram feitas do usuário
+$app->post("/admin/users/:iduser", function($iduser) {
+
+	User::verifyLogin();	
+
+});
+
 // faz rodar os comandos acima
 $app->run();
 

@@ -8,6 +8,7 @@ class Sql {
 	const USERNAME = "root";
 	const PASSWORD = "root";
 	const DBNAME = "db_ecommerce";
+	const OPCOES = array(         \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES UTF8' );
 
 	private $conn;
 
@@ -17,7 +18,8 @@ class Sql {
 		$this->conn = new \PDO(
 			"mysql:dbname=".Sql::DBNAME.";host=".Sql::HOSTNAME, 
 			Sql::USERNAME,
-			Sql::PASSWORD
+			Sql::PASSWORD,
+			Sql::OPCOES
 		);
 
 	}
