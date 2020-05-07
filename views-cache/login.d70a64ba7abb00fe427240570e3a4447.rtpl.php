@@ -32,8 +32,8 @@
   <!-- /.login-logo -->
   <div class="login-box-body">
     <p class="login-box-msg">Sign in to start your session</p>
-
-    <form action="../../index2.html" method="post">
+    <!-- no action informa para onde será enviado com o metodo post -->
+    <form action="/admin/login" method="post">
       <div class="form-group has-feedback">
         <input type="text" class="form-control" placeholder="Login" name="login">
         <span class="glyphicon glyphicon-user form-control-feedback"></span>
