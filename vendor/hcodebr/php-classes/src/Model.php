@@ -24,7 +24,7 @@ class Model {
 		}
 
 	}
-	// aqui irá inserir os dados dinamicamente
+	// aqui irá inserir os dados dos get e set dinamicamente
 	public function setData($data = array())
 	{
 

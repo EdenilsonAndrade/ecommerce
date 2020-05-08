@@ -92,6 +92,15 @@ $app->get("/admin/users/:iduser/delete", function($iduser) {
 
 	User::verifyLogin();	
 
+	$user = new User();
+
+	$user->get((int)$iduser);
+
+	$user->delete();
+
+	header("Location: /admin/users");
+	exit;
+
 });
 
 // acessa a tela para alterar usuário
@@ -118,22 +127,33 @@ $app->post("/admin/users/create", function() {
 
 	$user = new User();
 
-	$_POST["inadmin"] = (isset($_POST["inadmin"]))?1:0;
+	$_POST["inadmin"] = (isset($_POST["inadmin"]))?1:0; //para informar se o usuário é admin ou não
 
 	$user->setData($_POST);
 
-	var_dump($user);
+	$user->save();
 
-	// $user->save();
-
-	// header("Location: /admin/users");
-	// exit;
+	header("Location: /admin/users");
+	exit;
 
 });
 // salva as alterações que foram feitas do usuário
 $app->post("/admin/users/:iduser", function($iduser) {
 
-	User::verifyLogin();	
+	User::verifyLogin();
+
+	$user = new User();
+
+	$_POST["inadmin"] = (isset($_POST["inadmin"]))?1:0; //para informar se o usuário é admin ou não
+
+	$user->get((int)$iduser);
+
+	$user->setData($_POST);
+
+	$user->update();
+
+	header("Location: /admin/users");
+	exit;
 
 });
 

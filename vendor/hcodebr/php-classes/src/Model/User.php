@@ -79,29 +79,14 @@ class User extends Model {
 					INNER JOIN tb_persons per USING(idperson)
 					ORDER BY per.desperson");
 	}
-	// metodo para pegar as informações do usuário com o id que está sendo filtrado
-	public function get($iduser)
-	{
-
-		$sql = new Sql();
-
-		$results = $sql->select("SELECT * FROM tb_users user 
-					INNER JOIN tb_persons per USING(idperson)
-					WHERE user.iduser = :IDUSER", array(
-						":IDUSER"=>$iduser
-					));
-
-		$data = $results[0];
-
-		$this->setData($data);
-	}
+	
 	// metodo para inserir usuário
 	public function save()
 	{
 
 		$sql = new Sql();
 
-		$results = $sql->select("CALL sp_users_save(:desperson, :deslogin :despassword, :desemail, :nrphone, :inadmin)", array(
+		$results = $sql->select("CALL sp_users_save(:desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
 			":desperson"=>$this->getdesperson(),
 			":deslogin"=>$this->getdeslogin(),
 			":despassword"=>$this->getdespassword(),
@@ -110,7 +95,51 @@ class User extends Model {
 			":inadmin"=>$this->getinadmin()
 		));
 
-		
+		$this->setData($results[0]); // para retornar o usuário cadastrado
+	}
+
+	// metodo para retornar o usuário que foi selecionado para ser alterado
+	public function get($iduser)
+	{
+
+		$sql = new Sql();
+
+		$results = $sql->select("SELECT * FROM tb_users a 
+			INNER JOIN tb_persons b USING(idperson) WHERE a.iduser = :iduser", array(
+				":iduser"=>$iduser
+			));
+
+			$this->setData($results[0]); //retorna o usuário informado
+	}
+
+	// metodo para salvar as alterações no banco de dados
+
+	public function update()
+	{
+
+		$sql = new Sql();
+
+		$results = $sql->select("CALL sp_usersupdate_save(:iduser, :desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
+			":iduser"=>$this->getiduser(),
+			":desperson"=>$this->getdesperson(),
+			":deslogin"=>$this->getdeslogin(),
+			":despassword"=>$this->getdespassword(),
+			":desemail"=>$this->getdesemail(),
+			":nrphone"=>$this->getnrphone(),
+			":inadmin"=>$this->getinadmin()
+		));
+
+		$this->setData($results[0]); // para retornar o usuário alterado	
+	}
+	// metodo para deletar usuário
+	public function delete()
+	{
+
+		$sql = new Sql();
+
+		$sql->query("CALL sp_users_delete(:iduser)", array(
+			":iduser"=>$this->getiduser()
+		));
 	}
 
 }
