@@ -4,11 +4,14 @@ namespace Hcode\Model;
 // chama a classe sql
 use \Hcode\DB\Sql;
 use \Hcode\Model;
+use \Hcode\Mailer;
 
 class User extends Model {
 
 	const SESSION = "User";
-
+	const SECRET = "HcodePhp7_Secret"; //tem que conter no minimo 16 caracteres
+	const SECRET_IV = "HcodePhp7_Secret_IV"; //tem que conter no minimo 16 caracteres
+	// metodo para validar usuário e senha
 	public static function login($login, $password) {
 
 		$sql = new Sql();
@@ -16,47 +19,47 @@ class User extends Model {
 		$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :LOGIN", array(
 			":LOGIN"=>$login
 		));
-		// verifica se retornou alguma login com o usuÃ¡rio informado 
+		// verifica se retornou alguma login com o usuário informado 
 		if (count($results) === 0) {
 
-			throw new \Exception("UsuÃ¡rio inexistente ou senha invÃ¡lida.");
+			throw new \Exception("Usuário inexistente ou senha inválida.");
 
 		}
 
 		$data = $results[0];
-		// verifica se o usuÃ¡rio e senha estÃ£o corretos
+		// verifica se o usuário e senha estão corretos
 		if (password_verify($password, $data["despassword"]) === true) {
 
 			$user = new User();
 
 			$user->setData($data);
 
-			$_SESSION[User::SESSION] = $user->getValues(); //cria a sessÃ£o com os dados do usuÃ¡rio, busca da classe Model
+			$_SESSION[User::SESSION] = $user->getValues(); //cria a sessão com os dados do usuário, busca da classe Model
 
 			return $user;
 
 		} else {
 
-			throw new \Exception("UsuÃ¡rio inexistente ou senha invÃ¡lida.");
+			throw new \Exception("Usuário inexistente ou senha inválida.");
 
 		}
 
 	}
-	// metodo para veifiricar se o usuÃ¡rio estÃ¡ logado
+	// metodo para veifiricar se o usuário está logado
 	public static function verifylogin($inadmin = true)
 	{
 
 		if (
-			!isset($_SESSION[User::SESSION]) //verifica se contÃ©m a sessÃ£o 
+			!isset($_SESSION[User::SESSION]) //verifica se contém a sessão 
 			||
-			!$_SESSION[User::SESSION] //verifica se estÃ¡ vazia
+			!$_SESSION[User::SESSION] //verifica se está vazia
 			||
-			!(int)$_SESSION[User::SESSION]["iduser"] > 0 //verificar o id do usuÃ¡rio
+			!(int)$_SESSION[User::SESSION]["iduser"] > 0 //verificar o id do usuário
 			||
-			(bool)$_SESSION[User::SESSION]["inadmin"] !== $inadmin //verifica se o usuÃ¡rio Ã© admin
+			(bool)$_SESSION[User::SESSION]["inadmin"] !== $inadmin //verifica se o usuário é admin
 		) {
 
-			header("Location: /admin/login"); //se nÃ£o estiver definida direciona para a tela de login
+			header("Location: /admin/login"); //se não estiver definida direciona para a tela de login
 		exit;
 
 		}
@@ -69,7 +72,7 @@ class User extends Model {
 		$_SESSION[User::SESSION] = NULL;
 
 	}
-	// metodo para listar todos os usuÃ¡rios
+	// metodo para listar todos os usuários
 	public static function listAll()
 	{
 
@@ -80,7 +83,7 @@ class User extends Model {
 					ORDER BY per.desperson");
 	}
 	
-	// metodo para inserir usuÃ¡rio
+	// metodo para inserir usuário
 	public function save()
 	{
 
@@ -95,10 +98,10 @@ class User extends Model {
 			":inadmin"=>$this->getinadmin()
 		));
 
-		$this->setData($results[0]); // para retornar o usuÃ¡rio cadastrado
+		$this->setData($results[0]); // para retornar o usuário cadastrado
 	}
 
-	// metodo para retornar o usuÃ¡rio que foi selecionado para ser alterado
+	// metodo para retornar o usuário que foi selecionado para ser alterado
 	public function get($iduser)
 	{
 
@@ -109,10 +112,10 @@ class User extends Model {
 				":iduser"=>$iduser
 			));
 
-			$this->setData($results[0]); //retorna o usuÃ¡rio informado
+			$this->setData($results[0]); //retorna o usuário informado
 	}
 
-	// metodo para salvar as alteraÃ§Ãµes no banco de dados
+	// metodo para salvar as alterações no banco de dados
 
 	public function update()
 	{
@@ -129,9 +132,9 @@ class User extends Model {
 			":inadmin"=>$this->getinadmin()
 		));
 
-		$this->setData($results[0]); // para retornar o usuÃ¡rio alterado	
+		$this->setData($results[0]); // para retornar o usuário alterado	
 	}
-	// metodo para deletar usuÃ¡rio
+	// metodo para deletar usuário
 	public function delete()
 	{
 
@@ -141,6 +144,150 @@ class User extends Model {
 			":iduser"=>$this->getiduser()
 		));
 	}
+	// metodo para recuperar a senha
+
+	public static function getForgot($email, $inadmin = true)
+	{
+
+		$sql = new Sql();
+
+		$results = $sql->select("
+			SELECT * FROM tb_persons a
+			INNER JOIN tb_users b USING (idperson)
+			WHERE a.desemail = :email
+		", array(
+			":email"=>$email
+		));
+
+		if (count($results) === 0)
+		{
+
+			throw new \Exception("Não foi possível recuperar a senha.");
+
+		} 
+		else 
+		{
+
+			$data = $results[0];
+
+			$results2 = $sql->select("CALL sp_userspasswordsrecoveries_create(:iduser, :desip)", array(
+				":iduser"=>$data["iduser"],
+				":desip"=>$_SERVER["REMOTE_ADDR"]
+			));
+
+			if (count($results2) === 0)
+			{
+
+				throw new \Exception("Não foi possível recuperar a senha.");
+
+			} 
+			else 
+			{
+
+				$dataRecovery = $results2[0];
+
+				$code = openssl_encrypt($dataRecovery['idrecovery'], 'AES-128-CBC', pack("a16", User::SECRET), 0, pack("a16", User::SECRET_IV));
+
+				$code = base64_encode($code);
+				
+					if ($inadmin === true) 
+					{
+
+						$link = "http://www.hcodecommerce.com.br/admin/forgot/reset?code=$code";
+
+					} 
+					else 
+					{
+
+						$link = "http://www.hcodecommerce.com.br/forgot/reset?code=$code";
+						
+					}				
+					// parametros da classe construtor do Mailer, email, nome do usuário, assunto, layout html, nome que irá no html, link que irá no html do e-mail
+					$mailer = new Mailer($data['desemail'], $data['desperson'], "Redefinir senha do usuário " . $data['desperson'], "forgot", array(
+						"name"=>$data['desperson'],
+						"link"=>$link
+					));	
+
+					$mailer-> CharSet = 'ISO-8859-1';			
+
+					$mailer->send();
+
+					return $link;
+
+				}
+
+			}
+
+		}
+		// metodo para validar a senha do usuário
+		public static function validForgotDecrypt($code)
+		{
+
+			$code = base64_decode($code);
+
+			$idrecovery = openssl_decrypt($code, 'AES-128-CBC', pack("a16", User::SECRET), 0, pack("a16", User::SECRET_IV));
+
+			$sql = new Sql();
+
+			$results = $sql->select("
+				SELECT *
+				FROM tb_userspasswordsrecoveries a
+				INNER JOIN tb_users b USING(iduser)
+				INNER JOIN tb_persons c USING(idperson)
+				WHERE
+					a.idrecovery = :idrecovery
+					AND
+					a.dtrecovery IS NULL
+					AND
+					DATE_ADD(a.dtregister, INTERVAL 1 HOUR) >= NOW();
+			", array(
+				":idrecovery"=>$idrecovery
+			));
+
+			if (count($results) === 0)
+			{
+				throw new \Exception("Não foi possível recuperar a senha.");
+			}
+			else
+			{
+
+				return $results[0];
+
+			}
+
+		}
+		// metodo para informar que foi utilizado o código de recuperação
+		public static function setForgotUsed($idrecovery)
+		{
+
+			$sql = new Sql();
+
+			$sql->query("UPDATE tb_userspasswordsrecoveries SET dtrecovery = NOW() WHERE idrecovery = :idrecovery", array(
+				":idrecovery"=>$idrecovery
+			));
+
+		}
+		// metodo para gravar a recuperação da senha com a nova senha no banco
+		public function setPassword($password)
+		{
+
+			$sql = new Sql();
+
+			$sql->query("UPDATE tb_users SET despassword = :password WHERE iduser = :iduser", array(
+				":password"=>$password,
+				":iduser"=>$this->getiduser()
+			));
+
+		}
+		// metodo para criptografar a senha
+		public static function getPasswordHash($password)
+		{
+
+		return password_hash($password, PASSWORD_DEFAULT, [
+			'cost'=>12
+		]);
+
+		}
 
 }
 

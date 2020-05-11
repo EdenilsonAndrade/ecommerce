@@ -129,6 +129,8 @@ $app->post("/admin/users/create", function() {
 
 	$_POST["inadmin"] = (isset($_POST["inadmin"]))?1:0; //para informar se o usuário é admin ou não
 
+	$_POST['despassword'] = User::getPasswordHash($_POST['despassword']);
+	
 	$user->setData($_POST);
 
 	$user->save();
@@ -154,6 +156,77 @@ $app->post("/admin/users/:iduser", function($iduser) {
 
 	header("Location: /admin/users");
 	exit;
+
+});
+
+// chama a tela esqueceu a senha
+$app->get("/admin/forgot", function() {
+
+	$page = new PageAdmin([
+		"header"=>false,
+		"footer"=>false
+	]);
+
+	$page->setTpl("forgot");	
+
+});
+// encaminha o e-mail para a solicitação de recuperação de senha
+$app->post("/admin/forgot", function() {
+
+	$user = User::getForgot($_POST["email"]);
+
+	header("Location: /admin/forgot/sent");
+	exit;
+
+});
+// tras a tela de e-mail enviado com sucesso para a solicitação de recuperação de senha
+$app->get("/admin/forgot/sent", function(){
+
+	$page = new PageAdmin([
+		"header"=>false,
+		"footer"=>false
+	]);
+
+	$page->setTpl("forgot-sent");	
+
+});
+// link para recuperar a senha
+$app->get("/admin/forgot/reset", function() {
+
+	$user = User::validForgotDecrypt($_GET["code"]);
+
+	$page = new PageAdmin([
+		"header"=>false,
+		"footer"=>false
+	]);
+
+	$page->setTpl("forgot-reset", array (
+		"name"=>$user["desperson"],
+		"code"=>$_GET["code"]
+	));
+
+});
+// encaminha nova senha
+$app->post("/admin/forgot/reset", function() {
+
+	$forgot = User::validForgotDecrypt($_POST["code"]);
+
+	User::setForgotUsed($forgot["idrecovery"]);	
+
+	$user = new User();
+
+	$user->get((int)$forgot["iduser"]);
+
+	$password = User::getPasswordHash($_POST['password']);
+
+	$user->setPassword($password);
+
+	$page = new PageAdmin([
+		"header"=>false,
+		"footer"=>false
+	]);
+
+	$page->setTpl("forgot-reset-success");	
 
 });
 
