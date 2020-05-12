@@ -1,5 +1,5 @@
 <?php 
-// classe para validar o login e senha
+// classe para ajustes de usuários
 namespace Hcode\Model;
 // chama a classe sql
 use \Hcode\DB\Sql;
