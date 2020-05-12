@@ -29,6 +29,8 @@ class Category extends Model {
 
 		$this->setData($results[0]); // para retornar o usuário cadastrado
 
+		Category::updateFile();
+
 	}
 	// metodo para verificar se a categoria existe
 	public function get($idcategory)
@@ -51,6 +53,23 @@ class Category extends Model {
 		$sql->query("DELETE FROM tb_categories WHERE idcategory = :idcategory", [
 			":idcategory"=>$this->getidcategory()
 		]);
+
+		Category::updateFile();
+	}
+	// metodo para atualizar a lista de categorias para os cliente ao acessar o site
+	public static function updateFile()
+	{
+
+		$categories = Category::listAll();
+
+		$html = [];
+
+		foreach ($categories as $row) {
+			array_push($html, '<li><a href="/categories/'.$row['idcategory'].'">'.$row['descategory'].'</a></li>');
+		}
+
+		file_put_contents($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . "categories-menu.html", implode('', $html));// o implode altera de array para string
+
 	}
 
 }
