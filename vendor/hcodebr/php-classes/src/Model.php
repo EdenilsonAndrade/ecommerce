@@ -15,7 +15,7 @@ class Model {
 		{
 
 			case "get":
-				return $this->values[$fieldName]; //verifica a variavel pivate $values
+				return (isset($this->values[$fieldName])) ? $this->values[$fieldName] : NULL; //verifica a variavel pivate $values
 			break;
 
 			case "set":
