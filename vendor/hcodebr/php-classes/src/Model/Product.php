@@ -16,6 +16,21 @@ class Product extends Model {
 
 		return $sql->select("SELECT * FROM tb_products ORDER BY desproduct");
 	}
+	// metodo para carregar as fotos dos produtos para as paginas  do site
+	public static function checkList($list)
+	{
+
+		foreach ($list as &$row) {
+			
+			$p = new Product();
+			$p->setData($row);
+			$row = $p->getValues();
+
+		}
+
+		return $list;
+
+	}
 	// metodo para cadastrar/alterar produtos
 	public function save()
 	{

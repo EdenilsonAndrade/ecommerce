@@ -11,6 +11,7 @@ $app = new Slim();
 // para trazer os erros detalhados
 $app->config('debug', true);
 
+require_once("functions.php");
 require_once("site.php");
 require_once("admin.php");
 require_once("admin-users.php");
