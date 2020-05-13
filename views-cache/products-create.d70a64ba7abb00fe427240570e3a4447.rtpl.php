@@ -51,7 +51,7 @@
             </div>
             <div class="form-group">
               <label for="desurl">URL</label>
-              <input type="url" class="form-control" id="desurl" data-ls-module="charCounter" maxlength="128" name="desurl">
+              <input type="text" class="form-control" id="desurl" data-ls-module="charCounter" maxlength="128" name="desurl">
             </div>
           </div>
           <!-- /.box-body -->

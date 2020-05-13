@@ -44,7 +44,55 @@ $app->post("/admin/products/create", function(){
 	exit;
 
 });
+// metodo para deletar produtos
+$app->get("/admin/products/:idproduct/delete", function($idproduct){
 
+	User::verifyLogin();
 
+	$product = new Product();
+
+	$product->get((int)$idproduct);
+
+	$product->delete();
+
+	header("Location: /admin/products");
+	exit;
+
+});
+// chama a tela de edição de produto
+$app->get("/admin/products/:idproduct", function($idproduct){
+
+	User::verifyLogin();
+
+	$product = new Product();
+
+	$product->get((int)$idproduct);
+
+	$page = new PageAdmin();
+
+	$page->setTpl("products-update", [
+		"product"=>$product->getValues()
+	]);
+
+});
+// grava as alterações do produto
+$app->post("/admin/products/:idproduct", function($idproduct){
+
+	User::verifyLogin();
+
+	$product = new Product();
+
+	$product->get((int)$idproduct);
+
+	$product->setData($_POST);
+
+	$product->save();
+
+	$product->setPhoto($_FILES["file"]);
+
+	header("Location: /admin/products");
+	exit;
+
+});
 
  ?>
