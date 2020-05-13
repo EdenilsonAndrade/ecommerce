@@ -45,6 +45,26 @@ $app->post("/admin/categories/create", function() {
 	exit;	
 
 });
+
+// chama a tela do botão produtos, da categoria 
+$app->get("/admin/categories/:idcategory/products", function($idcategory){
+
+	User::verifyLogin();
+
+	$category = new Category();
+
+	$category->get((int)$idcategory);
+
+	$page = new PageAdmin();
+
+	$page->setTpl("categories-products", [
+		"category"=>$category->getValues(),
+		"productsRelated"=>$category->getProducts(),
+		"productsNotRelated"=>$category->getProducts(false)
+	]);
+
+});
+
 // metodo para excluir categoria
 $app->get("/admin/categories/:idcategory/delete", function($idcategory){
 
@@ -95,19 +115,10 @@ $app->post("/admin/categories/:idcategory", function($idcategory){
 
 });
 
-$app->get("/categories/:idcategory", function($idcategory){
 
-	$category = new Category();
 
-	$category->get((int)$idcategory);
 
-	$page = new Page();
 
-	$page->setTpl("category", [
-		"category"=>$category->getValues(),
-		"products"=>[]
-	]);
 
-});
 
  ?>

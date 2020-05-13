@@ -31,6 +31,7 @@ class Product extends Model {
 		return $list;
 
 	}
+
 	// metodo para cadastrar/alterar produtos
 	public function save()
 	{

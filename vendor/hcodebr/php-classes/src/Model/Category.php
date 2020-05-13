@@ -71,6 +71,35 @@ class Category extends Model {
 		file_put_contents($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "views" . DIRECTORY_SEPARATOR . "categories-menu.html", implode('', $html));// o implode altera de array para string
 
 	}
+	// metodo para trazer os produtos de determinada categoria
+	public function getProducts($related = true)
+	{
+
+		$sql = new Sql();
+
+		if ($related === true) 
+		{
+
+			return $sql->select("SELECT a.* FROM tb_products a 
+						  INNER JOIN tb_productscategories b USING (idproduct)
+						  WHERE b.idcategory = :idcategory", [
+						  	":idcategory"=>$this->getidcategory()
+						  ]);
+
+		}
+		else
+		{
+
+			return $sql->select("SELECT * FROM tb_products WHERE idproduct NOT IN (
+						  SELECT a.idproduct FROM tb_products a 
+						  INNER JOIN tb_productscategories b USING (idproduct)
+						  WHERE b.idcategory = :idcategory)", [
+						  	":idcategory"=>$this->getidcategory()
+						  ]);
+		}
+
+
+	}
 
 }
 
