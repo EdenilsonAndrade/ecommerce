@@ -26,13 +26,13 @@
               <table class="table table-striped">
                 <thead>
                   <tr>
-                    <th style="width: 10px">#</th>
+                    <th style="width: 10px">ID</th>
                     <th>Nome da Produto</th>
-                    <th>Preço</th>
-                    <th>Largura</th>
-                    <th>Altura</th>
-                    <th>Comprimento</th>
-                    <th>Peso</th>
+                    <th style='text-align:right'>Preço</th>
+                    <th style='text-align:right'>Largura</th>
+                    <th style='text-align:right'>Altura</th>
+                    <th style='text-align:right'>Comprimento</th>
+                    <th style='text-align:right'>Peso</th>
                     <th style="width: 140px">&nbsp;</th>
                   </tr>
                 </thead>
@@ -42,11 +42,11 @@
                   <tr>
                     <td><?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></td>
                     <td><?php echo htmlspecialchars( $value1["desproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></td>
-                    <td><?php echo htmlspecialchars( $value1["vlprice"], ENT_COMPAT, 'UTF-8', FALSE ); ?></td>
-                    <td><?php echo htmlspecialchars( $value1["vlwidth"], ENT_COMPAT, 'UTF-8', FALSE ); ?></td>
-                    <td><?php echo htmlspecialchars( $value1["vlheight"], ENT_COMPAT, 'UTF-8', FALSE ); ?></td>
-                    <td><?php echo htmlspecialchars( $value1["vllength"], ENT_COMPAT, 'UTF-8', FALSE ); ?></td>
-                    <td><?php echo htmlspecialchars( $value1["vlweight"], ENT_COMPAT, 'UTF-8', FALSE ); ?></td>
+                    <td align="right"><?php echo formatPrice($value1["vlprice"]); ?></td>
+                    <td align="right"><?php echo formatPrice($value1["vlwidth"]); ?></td>
+                    <td align="right"><?php echo formatPrice($value1["vlheight"]); ?></td>
+                    <td align="right"><?php echo formatPrice($value1["vllength"]); ?></td>
+                    <td align="right"><?php echo formatPrice($value1["vlweight"]); ?></td>
                     <td>
                       <a href="/admin/products/<?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i> Editar</a>
                       <a href="/admin/products/<?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/delete" onclick="return confirm('Deseja realmente excluir este registro?')" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Excluir</a>

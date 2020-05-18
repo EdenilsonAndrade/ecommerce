@@ -88,7 +88,7 @@ $app->post("/admin/products/:idproduct", function($idproduct){
 
 	$product->save();
 
-	$product->setPhoto($_FILES["file"]);
+	if ($_FILES["file"]["name"] !== "") $product->setPhoto($_FILES["file"]); //faz a verificação se foi selecionado uma nova foto, se não foi irá chamar o metodo setPhoto
 
 	header("Location: /admin/products");
 	exit;

@@ -26,13 +26,13 @@
               <table class="table table-striped">
                 <thead>
                   <tr>
-                    <th style="width: 10px">#</th>
+                    <th style="width: 10px">ID</th>
                     <th>Nome da Produto</th>
-                    <th>Preço</th>
-                    <th>Largura</th>
-                    <th>Altura</th>
-                    <th>Comprimento</th>
-                    <th>Peso</th>
+                    <th style='text-align:right'>Preço</th>
+                    <th style='text-align:right'>Largura</th>
+                    <th style='text-align:right'>Altura</th>
+                    <th style='text-align:right'>Comprimento</th>
+                    <th style='text-align:right'>Peso</th>
                     <th style="width: 140px">&nbsp;</th>
                   </tr>
                 </thead>
@@ -41,11 +41,11 @@
                   <tr>
                     <td>{$value.idproduct}</td>
                     <td>{$value.desproduct}</td>
-                    <td>{$value.vlprice}</td>
-                    <td>{$value.vlwidth}</td>
-                    <td>{$value.vlheight}</td>
-                    <td>{$value.vllength}</td>
-                    <td>{$value.vlweight}</td>
+                    <td align="right">{function="formatPrice($value.vlprice)"}</td>
+                    <td align="right">{function="formatPrice($value.vlwidth)"}</td>
+                    <td align="right">{function="formatPrice($value.vlheight)"}</td>
+                    <td align="right">{function="formatPrice($value.vllength)"}</td>
+                    <td align="right">{function="formatPrice($value.vlweight)"}</td>
                     <td>
                       <a href="/admin/products/{$value.idproduct}" class="btn btn-primary btn-xs"><i class="fa fa-edit"></i> Editar</a>
                       <a href="/admin/products/{$value.idproduct}/delete" onclick="return confirm('Deseja realmente excluir este registro?')" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i> Excluir</a>
