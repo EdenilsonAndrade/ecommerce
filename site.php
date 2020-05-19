@@ -17,7 +17,7 @@ $app->get('/', function() {
 
 });
 
-// metodo para chamar a categoria selecionada no site na página principal
+// paginação da categoria selecionada no site na página principal
 $app->get("/categories/:idcategory", function($idcategory){
 
 	$page = (isset($_GET["page"])) ? (int)$_GET["page"] : 1;
@@ -44,6 +44,21 @@ $app->get("/categories/:idcategory", function($idcategory){
 		"category"=>$category->getValues(),
 		"products"=>$pagination["data"],
 		"pages"=>$pages
+	]);
+
+});
+// chama a pagina de detalhes do produto
+$app->get("/products/:desurl", function($desurl){
+
+	$product = new Product();
+
+	$product->getFromURL($desurl);
+
+	$page = new Page();
+
+	$page->setTpl("product-detail", [
+		"product"=>$product->getValues(),
+		"categories"=>$product->getCategories()
 	]);
 
 });
