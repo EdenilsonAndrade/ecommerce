@@ -11,6 +11,57 @@ class User extends Model {
 	const SESSION = "User";
 	const SECRET = "HcodePhp7_Secret"; //tem que conter no minimo 16 caracteres
 	const SECRET_IV = "HcodePhp7_Secret_IV"; //tem que conter no minimo 16 caracteres
+	
+	// metodo para pegar os dados da sessão
+	public static function getFromSession()
+	{
+
+		$user = new User();
+
+		if (isset($_SESSION[User::SESSION]) && (int)$_SESSION[User::SESSION]['iduser'] > 0) {
+
+			$user->SetData($_SESSION[User::SESSION]);
+			
+		}
+
+		return $user;
+
+	}
+
+	// metodo para verificar se o usuário está logado
+	public static function checkLogin($inadmin = true)
+	{
+
+		if (
+			!isset($_SESSION[User::SESSION]) //verifica se contém a sessão 
+			||
+			!$_SESSION[User::SESSION] //verifica se está vazia
+			||
+			!(int)$_SESSION[User::SESSION]["iduser"] > 0
+		) {
+			// Não está logado
+			return false;
+		}
+		else
+		{
+
+			if ($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true) {
+
+				return true;
+
+			} else if ($inadmin === false) {
+
+				return true;
+
+			} else {
+
+				return false;
+			}
+
+		}
+
+	}
+
 	// metodo para validar usuário e senha
 	public static function login($login, $password) {
 
@@ -60,7 +111,7 @@ class User extends Model {
 		) {
 
 			header("Location: /admin/login"); //se não estiver definida direciona para a tela de login
-		exit;
+			exit;
 
 		}
 

@@ -184,6 +184,19 @@ class Product extends Model {
 		]);
 	}
 
+	public function verificaDesURL()
+	{
+
+		$sql = new Sql();
+
+		 return $results = $sql->select("
+		 	SELECT desproduct FROM tb_products
+		 	WHERE desurl IN (
+			SELECT desurl FROM tb_products 
+			GROUP BY desurl
+			HAVING COUNT(*)>1)");
+	}
+
 }
 
  ?>
