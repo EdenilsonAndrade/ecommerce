@@ -21,9 +21,14 @@
 
                         <form action="/checkout">
                             
+                            <?php if( $error != '' ){ ?>
+
                             <div class="alert alert-danger" role="alert">
-                            Error!
+                            <?php echo htmlspecialchars( $error, ENT_COMPAT, 'UTF-8', FALSE ); ?>
+
                             </div>
+                            <?php } ?>
+
 
                             <table cellspacing="0" class="shop_table cart">
                                 <thead>
@@ -81,7 +86,7 @@
                                     
                                     <div class="coupon">
                                         <label for="cep">CEP:</label>
-                                        <input type="text" placeholder="00000-000" value="" id="cep" class="input-text" name="zipcode">
+                                        <input type="number" placeholder="Apenas os números" value="" id="cep" class="input-text" name="zipcode">
                                         <input type="submit" formmethod="post" formaction="/cart/freight" value="CÁLCULAR" class="button">
                                     </div>
 
