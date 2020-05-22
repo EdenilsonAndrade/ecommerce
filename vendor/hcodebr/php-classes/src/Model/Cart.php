@@ -125,6 +125,8 @@ class Cart extends Model {
 			":idcart"=>$this->getidcart(),
 			":idproduct"=>$product->getidproduct()
 		]);
+
+		$this->getCalculateTotal();
 	}
 
 	// metodo para remover produtos do carrinho de compras
@@ -148,6 +150,8 @@ class Cart extends Model {
 			]);
 
 		}
+
+		$this->getCalculateTotal();
 
 	}
 
@@ -224,6 +228,7 @@ class Cart extends Model {
 
 			if($totals['vlheight'] < 2) $totals['vlheight'] = 2;
 			if($totals['vllength'] < 16) $totals['vllength'] = 16;
+			if($totals['vlwidth'] < 11) $totals['vlwidth'] = 11;
 
 			$qs = http_build_query([
 				'nCdEmpresa'=>'',
@@ -236,15 +241,20 @@ class Cart extends Model {
 				'nVlComprimento'=>$totals['vllength'],
 				'nVlAltura'=>$totals['vlheight'],
 				'nVlLargura'=>$totals['vlwidth'],
-				'nVlDiametro'=>'0',
+				'nVlDiametro'=>'5',
 				'sCdMaoPropria'=>'S',
-				'nVlValorDeclarado'=>$totals['vlprice'],
+				'nVlValorDeclarado'=>'0',
 				'sCdAvisoRecebimento'=>'S'
 			]);		
 
+			// $xml = (array)simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo?".$qs);
+
+			// echo json_encode($xml);
+			// exit;
+
 			$xml = simplexml_load_file("http://ws.correios.com.br/calculador/CalcPrecoPrazo.asmx/CalcPrecoPrazo?".$qs);
 
-			$result = $xml->Servicos->nCdServico;
+			$result = $xml->Servicos->cServico;
 
 			if ($result->MsgErro != '') {
 
@@ -276,13 +286,16 @@ class Cart extends Model {
 	{
 
 		$value = str_replace('.', '', $value);
-		return str_replace(',', '.', $value);
+		$value = str_replace(',', '.', $value);
+		return (float)$value;
+		
 	}
 	// para pegar a mensagem de erro
 	public static function setMsgError($msg)
 	{
 
 		$_SESSION[Cart::SESSION_ERROR] = $msg;
+
 	}
 	// metodo para setar o erro na constante
 	public static function getMsgError()
@@ -300,6 +313,36 @@ class Cart extends Model {
 	{
 
 		$_SESSION[Cart::SESSION_ERROR] = NULL;
+
+	}
+	// metodo para atualizar o cep se o cliente adicionar ou remover produtos
+	public function updateFreight()
+	{
+
+		if ($this->getdeszipcode() != '') {
+
+			$this->setFreight($this->getdeszipcode());
+		}
+	}
+	// para trazer o total e o subtotal
+	public function getValues()
+	{
+
+		$this->getCalculateTotal();
+
+		return parent::getValues();
+	}
+	// metodo para calcular o total e o subtotal
+	public function getCalculateTotal()
+	{
+
+		$this->updateFreight(); //força atualizar o frete
+
+		$totals = $this->getProductsTotals();
+
+		$this->setvlsubtotal($totals['vlprice']);
+		$this->setvltotal($totals['vlprice'] + $this->getvlfreight());
+
 	}
 
 }
