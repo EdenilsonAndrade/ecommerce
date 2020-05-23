@@ -11,6 +11,8 @@ class User extends Model {
 	const SESSION = "User";
 	const SECRET = "HcodePhp7_Secret"; //tem que conter no minimo 16 caracteres
 	const SECRET_IV = "HcodePhp7_Secret_IV"; //tem que conter no minimo 16 caracteres
+	const ERROR = "UserError";
+	const ERROR_REGISTER = "UserErrorRegister";
 	
 	// metodo para pegar os dados da sessão
 	public static function getFromSession()
@@ -97,25 +99,20 @@ class User extends Model {
 
 	}
 	// metodo para veifiricar se o usuário está logado
-	public static function verifylogin($inadmin = true)
-	{
-
-		if (
-			!isset($_SESSION[User::SESSION]) //verifica se contém a sessão 
-			||
-			!$_SESSION[User::SESSION] //verifica se está vazia
-			||
-			!(int)$_SESSION[User::SESSION]["iduser"] > 0 //verificar o id do usuário
-			||
-			(bool)$_SESSION[User::SESSION]["inadmin"] !== $inadmin //verifica se o usuário é admin
-		) {
-
-			header("Location: /admin/login"); //se não estiver definida direciona para a tela de login
-			exit;
-
-		}
-
-	}
+	public static function verifyLogin($inadmin = true)
+{
+ 
+    if(!User::checkLogin($inadmin)) {
+ 
+        if ($inadmin){
+            header("Location: /admin/login");
+        } else {
+            header("Location: /login");
+        }
+ 
+    }
+ 
+}
 	// para fazer logout
 	public static function logout()
 	{
@@ -338,6 +335,37 @@ class User extends Model {
 			'cost'=>12
 		]);
 
+		}
+		// metodo para pegar a mensagem do erro
+		public static function setError($msg)
+		{
+
+			$_SESSION[User::ERROR] = $msg;
+
+		}
+		// metodo para setar o erro na constante
+		public static function getError()
+		{
+
+			$msg = (isset($_SESSION[User::ERROR])) && $_SESSION[User::ERROR] ? $_SESSION[User::ERROR] : "";
+
+			User::clearError();
+
+			return $msg;
+
+		}
+		// metodo para limpar
+		public static function clearError()
+		{
+
+			$_SESSION[User::ERROR] = NULL;
+
+		}
+		// metodo para registrar o erro
+		public static function setErrorRegister($msg)
+		{
+
+			$_SESSION[User::ERROR_REGISTER] = $msg;
 		}
 
 }
