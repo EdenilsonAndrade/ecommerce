@@ -58,6 +58,7 @@ class User extends Model {
 			} else {
 
 				return false;
+
 			}
 
 		}
@@ -69,7 +70,10 @@ class User extends Model {
 
 		$sql = new Sql();
 
-		$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :LOGIN", array(
+		$results = $sql->select("
+			SELECT * FROM tb_users a
+			INNER JOIN tb_persons b USING (idperson)
+			WHERE a.deslogin = :LOGIN", array(
 			":LOGIN"=>$login
 		));
 		// verifica se retornou alguma login com o usuário informado 
@@ -109,7 +113,7 @@ class User extends Model {
         } else {
             header("Location: /login");
         }
- 
+        exit; 
     }
  
 }
@@ -160,7 +164,11 @@ class User extends Model {
 				":iduser"=>$iduser
 			));
 
-			$this->setData($results[0]); //retorna o usuário informado
+			$data = $results[0];
+
+			$data['desperson'] = utf8_encode($data['desperson']);
+
+			$this->setData($data); //retorna o usuário informado
 	}
 
 	// metodo para salvar as alterações no banco de dados
@@ -347,7 +355,7 @@ class User extends Model {
 		public static function getError()
 		{
 
-			$msg = (isset($_SESSION[User::ERROR])) && $_SESSION[User::ERROR] ? $_SESSION[User::ERROR] : "";
+			$msg = (isset($_SESSION[User::ERROR]) && $_SESSION[User::ERROR]) ? $_SESSION[User::ERROR] : "";
 
 			User::clearError();
 
@@ -366,6 +374,24 @@ class User extends Model {
 		{
 
 			$_SESSION[User::ERROR_REGISTER] = $msg;
+		}
+
+		public static function getErrorRegister()
+		{
+
+			$msg = (isset($_SESSION[User::ERROR_REGISTER]) && $_SESSION[User::ERROR_REGISTER]) ? $_SESSION[User::ERROR_REGISTER] : '';
+
+			User::clearErrorRegister();
+
+			return $msg;
+
+		}
+
+		public static function clearErrorRegister()
+		{
+
+			$_SESSION[User::ERROR_REGISTER] = NULL;
+
 		}
 
 }

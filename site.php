@@ -113,7 +113,7 @@ $app->get("/cart/:idproduct/minus", function($idproduct){
 
 	$cart->removeProduct($product);
 
-	header("Location: /cart");
+	header("Location: /cart#table-cart");
 	exit;
 
 });
@@ -129,7 +129,7 @@ $app->get("/cart/:idproduct/remove", function($idproduct){
 
 	$cart->removeProduct($product, true);
 
-	header("Location: /cart");
+	header("Location: /cart#table-cart");
 	exit;
 
 });
@@ -141,7 +141,7 @@ $app->post("/cart/freight", function(){
 
 	$cart->setFreight($_POST['zipcode']);
 
-	header("Location: /cart");
+	header("Location: /cart#table-cart");
 	exit;
 
 });
@@ -170,7 +170,9 @@ $app->get("/login", function(){
 	$page = new Page();
 
 	$page->setTpl("login", [
-		'error'=>User::getError()
+		'error'=>User::getError(),
+		'errorRegister'=>User::getErrorRegister(),
+		'registerValues'=>(isset($_SESSION['registerValues'])) ? $_SESSION['registerValues'] : ['name'=>'', 'email'=>'', 'phone'=>'']
 	]);
 
 });
@@ -182,13 +184,23 @@ $app->post("/login", function(){
 
 		User::login($_POST['login'], $_POST['password']);
 
-	} catch(Excption $e) {
+	} catch(Exception $e) {
 
 		User::setError($e->getMessage());
 	}
 
 	header("Location: /checkout");
 	exit;
+
+});
+
+// rota para deslogar o usuário
+$app->get("/logout", function(){
+
+	User::logout();
+
+	header("Location: /login");
+	exit;	
 
 });
 

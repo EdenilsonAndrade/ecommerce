@@ -30,7 +30,7 @@
                             <?php } ?>
 
 
-                            <table cellspacing="0" class="shop_table cart">
+                            <table id="table-cart" cellspacing="0" class="shop_table cart">
                                 <thead>
                                     <tr>
                                         <th class="product-remove">&nbsp;</th>
